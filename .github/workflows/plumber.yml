@@ -1,0 +1,54 @@
+# Plumber, added to getplumber-examples/openclaw-android by the Plumber GitHub App.
+#
+# This workflow is the scanner. It reads this repository's CI configuration
+# against a supply-chain trust policy (how actions are pinned, what a token may
+# do, what a workflow may reach) and pushes the report to the Plumber service,
+# which keeps the findings and the score and opens a pull request when a push
+# adds a finding that was not there before.
+#
+# Nothing here holds a credential of this repository. The report is
+# authenticated with the Actions OIDC token this job mints for itself, which is
+# what `id-token: write` below is for: the service verifies that token and has
+# no secret of yours to lose.
+#
+# Every third-party action is pinned by commit sha, which is one of the controls
+# this scan checks. The comment after each sha is the tag it was published as.
+name: Plumber
+
+on:
+  push:
+    branches:
+      - main
+  # Once a week, because a finding can appear without anybody pushing: an action
+  # that was trustworthy on Monday is a tag that moved on Thursday.
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plumber:
+    name: Plumber
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The scan reads files and never pushes, so the job needs no git
+          # credential left behind in the checkout.
+          persist-credentials: false
+      - name: Scan and push the report
+        uses: getplumber/plumber@4804289c25a4417f689d8fdc6622a293bb47fc0e # v0.6.1
+        with:
+          score-push: true
+          score-endpoint: https://app.getplumber.tech/ingest
+          # The default gate is all or nothing at 100 points, which would turn
+          # one small finding into a red default branch. This reports with some
+          # slack instead.
+          min-points: 85
+          # Code scanning needs GitHub Advanced Security, which a private
+          # repository on a free plan does not have.
+          upload-sarif: false
