@@ -6,17 +6,20 @@ on:
   schedule:
     - cron: "0 3 * * *"
 
-permissions: write-all
+permissions:
+  contents: read
 
 jobs:
   bench:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: tj-actions/changed-files@v45
+        with:
+          persist-credentials: false
+      - uses: tj-actions/changed-files@48d8f15b2aaa3d255ca5af3eba4870f807ce6b3c # v45
         with:
           files: "**/*.ts"
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
       - name: Run the benchmark suite
         run: |
           echo "benchmarks placeholder"
