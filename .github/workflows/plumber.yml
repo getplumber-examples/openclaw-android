@@ -16,6 +16,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: getplumber/plumber@ace0b096144d1f7af8290f4d63349a5a0cd5c889 # v0.7.14
+      - uses: getplumber/plumber@e9ad2dc6d6faa2dfd84395aac18e461284062640 # v0.7.16
         with:
           platform: https://demo-github.getplumber.tech
