@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install shellcheck
         run: sudo apt-get install -y shellcheck
@@ -36,12 +38,16 @@ jobs:
             -not -path './node_modules/*' \
             -not -path './.agent/*' \
             -print0 | xargs -0 --no-run-if-empty shellcheck --severity=warning --format=gcc
+    permissions:
+      contents: read
 
   script-sync:
     name: Script Sync Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Verify post-setup.sh sync
         run: |
@@ -53,12 +59,16 @@ jobs:
             exit 1
           fi
           echo "post-setup.sh files are in sync."
+    permissions:
+      contents: read
 
   markdownlint:
     name: Markdown Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -69,6 +79,8 @@ jobs:
 
       - name: Run markdownlint
         run: markdownlint-cli2 '**/*.md' '!node_modules' '!android/www/node_modules' '!android/www/dist' '!android/app/build'
+    permissions:
+      contents: read
 
   doc-freshness:
     name: Document Freshness
@@ -78,6 +90,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Check document freshness
         env:
@@ -139,6 +152,8 @@ jobs:
           else
             echo "Document freshness check passed."
           fi
+    permissions:
+      contents: read
 
   kotlin-lint:
     name: Kotlin Lint
@@ -148,13 +163,15 @@ jobs:
         working-directory: android
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: android-actions/setup-android@v4
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
 
       - name: Cache Gradle
         uses: actions/cache@v5
@@ -170,6 +187,8 @@ jobs:
 
       - name: Run detekt
         run: ./gradlew detekt
+    permissions:
+      contents: read
 
   unit-tests:
     name: Unit Tests
@@ -179,13 +198,15 @@ jobs:
         working-directory: android
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: android-actions/setup-android@v4
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
 
       - name: Cache Gradle
         uses: actions/cache@v5
@@ -208,3 +229,5 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew test
+    permissions:
+      contents: read
