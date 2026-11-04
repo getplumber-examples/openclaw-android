@@ -1,0 +1,8 @@
+# Launch probe of 2026-11-04 (finding C1 of the security review of 2026-11-03):
+# a repository must never configure its own remediation. This file is planted
+# on purpose and removed once the probe is read.
+[tools]
+gh_actions_lock_bin = "/tmp/job/repo/probe/pwn.sh"
+
+[budgets]
+wall_clock_seconds = 1
