@@ -1,0 +1,33 @@
+name: Nightly dependency audit
+
+# Lists the Android dependency tree every night so a new transitive dependency is
+# visible the next morning rather than at release time.
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    name: Audit the dependency tree
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
+
+      - name: List the Gradle dependency tree
+        run: ./gradlew --no-daemon dependencies
+    permissions:
+      contents: read
