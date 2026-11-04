@@ -13,3 +13,4 @@ github:
     githubActionMustComeFromAuthorizedSources:
       trustedGithubActions:
         - getplumber/*
+        - probe-evil-example/*
